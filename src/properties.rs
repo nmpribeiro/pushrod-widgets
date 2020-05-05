@@ -33,9 +33,31 @@ pub struct WidgetProperties {
 /// `Widget`, which stores information about the property.  Once each property is set, the `Widget`
 /// can respond to the set action, and repaint itself, or anything similar.
 impl WidgetProperties {
+    /// Constructor for the `properties` `HashMap`.
     pub fn new() -> Self {
         Self {
             properties: HashMap::new(),
         }
     }
+
+    /// Sets a value for a property based on its numerical key.
+    pub fn set(&mut self, property_key: u32, property_value: String) {
+        self.properties.insert(property_key, property_value.clone());
+    }
+
+    /// Deletes a property value for the given numerical key.
+    pub fn delete(&mut self, property_key: u32) {
+        self.properties.remove(&property_key);
+    }
+
+    /// Retrieves the value for a property.
+    pub fn get(&mut self, property_key: u32) -> String {
+        self.properties.get(&property_key).unwrap_or(&String::from("")).clone()
+    }
+
+    /// Returns a flag indicating whether or not a property for a numerical key has been set.
+    pub fn key_set(&mut self, property_key: u32) -> bool {
+        self.properties.contains_key(&property_key)
+    }
+
 }

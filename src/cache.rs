@@ -17,10 +17,11 @@
 // TODO: of the structure.  So, a tree is not entirely accurate.
 
 use crate::widget::Widget;
+use std::cell::RefCell;
 
 /// This is the `WidgetCache` store structure.
 pub struct WidgetCache {
-    cache: Vec<Box<dyn Widget>>,
+    cache: Vec<RefCell<Box<dyn Widget>>>,
 }
 
 /// This is the `WidgetCache` that is used to store `Widget` references in a drawing tree by ID.

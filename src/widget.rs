@@ -13,4 +13,30 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-pub trait Widget { }
+use crate::properties::{WidgetProperties, PROPERTY_INVALIDATED};
+
+/// This is the `Widget` trait that all implemented `Widget`s need to extend in order to function
+/// with the `Pushrod` library.  All functions in this trait (aside from default implementations)
+/// should be implemented by the `Widget`.
+pub trait Widget {
+
+    fn properties(&mut self) -> &mut WidgetProperties;
+
+    fn set_property(&mut self, property_key: u32, property_value: String) {
+        self.properties().set(property_key, property_value.clone());
+    }
+
+    fn invalidate(&mut self) {
+        self.properties().set(PROPERTY_INVALIDATED, String::from("true"));
+    }
+
+    fn invalidated(&mut self) -> bool {
+        if self.properties().key_set(PROPERTY_INVALIDATED) {
+            self.properties().delete(PROPERTY_INVALIDATED);
+            true
+        } else {
+            false
+        }
+    }
+
+}
