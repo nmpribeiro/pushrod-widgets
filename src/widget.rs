@@ -20,16 +20,24 @@ use crate::properties::{WidgetProperties, PROPERTY_INVALIDATED};
 /// should be implemented by the `Widget`.
 pub trait Widget {
 
+    /// This provides access to the `WidgetProperties` set for a `Widget`.  These must be defined
+    /// in the structure of the `Widget`, as they allow for direct manipulation of the properties.
     fn properties(&mut self) -> &mut WidgetProperties;
 
+    /// Sets a property for a `Widget`.
     fn set_property(&mut self, property_key: u32, property_value: String) {
         self.properties().set(property_key, property_value.clone());
+        // Send signal that a property changed to the engine.
     }
 
+    /// Set the invalidation key for this `Widget`, indicating that the `TextureCache` needs to
+    /// be redrawn.
     fn invalidate(&mut self) {
         self.properties().set(PROPERTY_INVALIDATED, String::from("true"));
     }
 
+    /// Flag indicating whether or not the `draw` method needs to be called for this `Widget` so
+    /// that its `TextureCache` is refreshed.
     fn invalidated(&mut self) -> bool {
         if self.properties().key_set(PROPERTY_INVALIDATED) {
             self.properties().delete(PROPERTY_INVALIDATED);

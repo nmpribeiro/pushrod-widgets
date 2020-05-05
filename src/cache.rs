@@ -32,3 +32,13 @@ impl WidgetCache {
         }
     }
 }
+
+pub struct TextureCache {
+
+}
+
+impl TextureCache {
+    pub fn new() -> Self {
+        Self { }
+    }
+}
