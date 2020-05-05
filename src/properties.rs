@@ -18,6 +18,9 @@ use std::collections::HashMap;
 pub const PROPERTY_NATIVE_WIDGET_ADDER: u32 = 0;
 pub const PROPERTY_INVALIDATED: u32 = 1 + PROPERTY_NATIVE_WIDGET_ADDER;
 pub const PROPERTY_POSITION: u32 = 1 + PROPERTY_INVALIDATED;
+pub const PROPERTY_TEXT: u32 = 1 + PROPERTY_POSITION;
+pub const PROPERTY_MAIN_COLOR: u32 = 1 + PROPERTY_TEXT;
+pub const PROPERTY_BACKGROUND_COLOR: u32 = 1 + PROPERTY_MAIN_COLOR;
 
 /// This is a structure that stores properties for Widgets, which can be used to define the object's
 /// behavior.
