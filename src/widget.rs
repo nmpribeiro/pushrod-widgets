@@ -14,6 +14,9 @@
 // limitations under the License.
 
 use crate::properties::{WidgetProperties, PROPERTY_INVALIDATED};
+use sdl2::render::{Canvas, Texture};
+use sdl2::video::Window;
+use crate::caches::TextureCache;
 
 /// This is the `Widget` trait that all implemented `Widget`s need to extend in order to function
 /// with the `Pushrod` library.  All functions in this trait (aside from default implementations)
@@ -23,6 +26,11 @@ pub trait Widget {
     /// This provides access to the `WidgetProperties` set for a `Widget`.  These must be defined
     /// in the structure of the `Widget`, as they allow for direct manipulation of the properties.
     fn properties(&mut self) -> &mut WidgetProperties;
+
+    /// This provides an entry point to draw the contents of a `Widget` on to a `Texture`.
+    fn draw(&mut self, c: &mut Canvas<Window>, t: &mut TextureCache) -> Option<&Texture> {
+        None
+    }
 
     /// Sets a property for a `Widget`.
     fn set_property(&mut self, property_key: u32, property_value: String) {

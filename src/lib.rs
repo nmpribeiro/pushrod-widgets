@@ -22,6 +22,5 @@ pub mod properties;
 /// top-level drawing loop whether or not a `Widget` needs to be redrawn.
 pub mod widget;
 
-/// This is a `Widget` cache that is used to store `Widget`s on the display field of a `Window`.
-/// Each cached object is stored in a `Vec`, which is accessible using its numeric ID.
-pub mod cache;
+/// This is a `Widget` and `Texture` cache that are used by `Widget`s.
+pub mod caches;
