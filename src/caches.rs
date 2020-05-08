@@ -33,10 +33,26 @@ pub struct WidgetCache {
 
 /// This is the `WidgetCache` that is used to store `Widget` references in a drawing tree by ID.
 impl WidgetCache {
+    /// Creates a new `WidgetCache`.
     pub fn new() -> Self {
         Self {
             cache: Vec::new(),
         }
+    }
+
+    /// Retrieves the ID of the widget at the X/Y coordinates given.
+    ///
+    /// Follows the following rules:
+    /// - If the object is hidden, any objects underneath that object are short-circuited
+    /// - If an object is visible, it walks the object's children to see if they are within the same
+    ///   given coordinates
+    ///
+    /// The found ID is then returned having met all of those criteria.  If no ID was found, a
+    /// 0 value (root level widget) is returned.
+    pub fn get_widget_at(&self, x: u32, y: u32) -> u32 {
+        let mut found_id: u32 = 0;
+
+        found_id
     }
 }
 
