@@ -13,4 +13,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+/// This is a base widget that draws a background and a box with colors, based on the settings
+/// in the properties.  Custom Widgets can use the `BaseWidget` as a top-level widget for drawing
+/// a background or the bounding box, extending it later.
 pub mod base_widget;
