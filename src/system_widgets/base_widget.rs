@@ -22,31 +22,14 @@ use crate::widget::Widget;
 use crate::caches::TextureCache;
 use crate::properties::WidgetProperties;
 
-/// This is an example top-level `Widget` object that is used to draw a background and a border
-/// of specified colors.  `COLOR_BASE` determines the background fill color, and the `COLOR_BORDER`
-/// determines the color of the border.  The width of the border is controlled by the
-/// `get_config().border_width` property.
+/// Base Widget.
+#[derive(Default)]
 pub struct BaseWidget {
     texture_store: TextureStore,
     properties: WidgetProperties,
 }
 
-/// Base top-level implementation of the `BaseWidget`, which other classes can extend.
-impl BaseWidget {
-    /// Constructs a new base widget, given the points of origin and size.
-    pub fn new() -> Self {
-        Self {
-            texture_store: TextureStore::default(),
-            properties: WidgetProperties::default(),
-        }
-    }
-}
-
 /// Implementation for drawing a `BaseWidget`, with the `Widget` trait objects applied.
-/// This code can be used as a base implementation, or an example of how to create a `Widget` in
-/// `Pushrod`.  The base set of `Widget`s show off a multitude of different uses for handling events,
-/// display contents, and so on.  Look through the code in the `pushrod::widgets` module to get
-/// more of an idea of what is possible.
 impl Widget for BaseWidget {
     fn draw(&mut self, c: &mut Canvas<Window>, _t: &mut TextureCache) -> Option<&Texture> {
         // You _can_ remove this `if` statement here, and just let the code run each time.  It will
@@ -75,7 +58,5 @@ impl Widget for BaseWidget {
         self.texture_store.get_optional_ref()
     }
 
-    fn properties(&mut self) -> &mut WidgetProperties {
-        &mut self.properties
-    }
+    fn properties(&mut self) -> &mut WidgetProperties { &mut self.properties }
 }
