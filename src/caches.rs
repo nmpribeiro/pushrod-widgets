@@ -49,6 +49,7 @@ impl WidgetCache {
     ///
     /// The found ID is then returned having met all of those criteria.  If no ID was found, a
     /// 0 value (root level widget) is returned.
+    #[inline]
     pub fn get_widget_at(&self, x: u32, y: u32) -> u32 {
         let mut found_id: u32 = 0;
 
