@@ -27,8 +27,23 @@ pub trait Widget {
     /// in the structure of the `Widget`, as they allow for direct manipulation of the properties.
     fn properties(&mut self) -> &mut WidgetProperties;
 
-    /// This provides an entry point to draw the contents of a `Widget` on to a `Texture`.
-    fn draw(&mut self, c: &mut Canvas<Window>, t: &mut TextureCache) -> Option<&Texture> {
+    /// Draws the widget.  If you wish to modify the canvas object, you must declare it as `mut` in
+    /// your implementation (ie `fn draw(&mut self, mut canvas: Canvas<Window>)`).  The `_canvas`
+    /// is the currently active drawing canvas at the time this function is called.  This called
+    /// during the draw loop of the `Engine`.  This returns a reference to the stored `Texture` object
+    /// within the `Widget`.  It is then copied to the canvas, and displayed in the display loop.
+    /// In this function, you can just return a reference to the `Texture` if no invalidation state
+    /// was set, otherwise, the draw can be re-performed, and the `Texture` returned.  If the drawing
+    /// function returns no texture, return a `None`, and it will not be rendered during the display
+    /// loop, but it will still be called.  A `TextureCache` is provided in case your `Widget` needs
+    /// to cache an image or a font store.
+    ///
+    /// So, why not just call `draw` each time, if the `Engine` already handles the calling of the
+    /// draw for you when an object needs invalidation?  This is to avoid excess CPU usage.  You
+    /// **can** call the draw method each time: all it will do is return the reference to the already
+    /// drawn `Texture` if you do this.  It's only at the time the contents needs to be redrawn will
+    /// the logic for the draw take place (so long the `invalidated` state is obeyed)
+    fn draw(&mut self, _c: &mut Canvas<Window>, _t: &mut TextureCache) -> Option<&Texture> {
         None
     }
 

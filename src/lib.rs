@@ -28,3 +28,6 @@ pub mod caches;
 /// This is a store used by `Widget`s for drawing against.  Once the drawing is complete, the
 /// `Texture` stored within is used for blitting to the screen.
 pub mod texture_store;
+
+/// System-provided Widget library.
+pub mod system_widgets;

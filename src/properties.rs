@@ -24,7 +24,7 @@ pub const PROPERTY_BACKGROUND_COLOR: u32 = 1 + PROPERTY_MAIN_COLOR;
 
 /// This is a structure that stores properties for Widgets, which can be used to define the object's
 /// behavior.
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Default)]
 pub struct WidgetProperties {
     properties: HashMap<u32, String>,
 }
@@ -33,13 +33,6 @@ pub struct WidgetProperties {
 /// `Widget`, which stores information about the property.  Once each property is set, the `Widget`
 /// can respond to the set action, and repaint itself, or anything similar.
 impl WidgetProperties {
-    /// Constructor for the `properties` `HashMap`.
-    pub fn new() -> Self {
-        Self {
-            properties: HashMap::new(),
-        }
-    }
-
     /// Sets a value for a property based on its numerical key.
     pub fn set(&mut self, property_key: u32, property_value: String) {
         self.properties.insert(property_key, property_value.clone());
