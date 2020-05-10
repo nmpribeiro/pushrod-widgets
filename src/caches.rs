@@ -27,19 +27,17 @@ use std::collections::HashMap;
 use std::path::Path;
 
 /// This is the `WidgetCache` store structure.
+#[derive(Default)]
 pub struct WidgetCache {
     cache: Vec<RefCell<Box<dyn Widget>>>,
 }
 
+// TODO Add parent
+// TODO Add children Vec<u32>
+// TODO Add get_child_ids(widget_id)
+
 /// This is the `WidgetCache` that is used to store `Widget` references in a drawing tree by ID.
 impl WidgetCache {
-    /// Creates a new `WidgetCache`.
-    pub fn new() -> Self {
-        Self {
-            cache: Vec::new(),
-        }
-    }
-
     /// Retrieves the ID of the widget at the X/Y coordinates given.
     ///
     /// Follows the following rules:

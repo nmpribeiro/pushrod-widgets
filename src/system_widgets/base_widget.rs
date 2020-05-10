@@ -20,7 +20,9 @@ use sdl2::video::Window;
 use crate::texture_store::TextureStore;
 use crate::widget::Widget;
 use crate::caches::TextureCache;
-use crate::properties::WidgetProperties;
+use crate::properties::{WidgetProperties, PROPERTY_MAIN_COLOR, PROPERTY_BACKGROUND_COLOR, PROPERTY_SIZE};
+use sdl2::pixels::Color;
+use sdl2::rect::Rect;
 
 /// Base Widget.
 #[derive(Default)]
@@ -32,27 +34,25 @@ pub struct BaseWidget {
 /// Implementation for drawing a `BaseWidget`, with the `Widget` trait objects applied.
 impl Widget for BaseWidget {
     fn draw(&mut self, c: &mut Canvas<Window>, _t: &mut TextureCache) -> Option<&Texture> {
-        // You _can_ remove this `if` statement here, and just let the code run each time.  It will
-        // eventually make your application less efficient if this is constantly called.
+        // ONLY update the texture if the `BaseWidget` shows that it's been invalidated.
         if self.invalidated() {
-            // let bounds = self.get_config().get_size(CONFIG_SIZE);
-            //
-            // self.texture_store
-            //     .create_or_resize_texture(c, bounds[0] as u32, bounds[1] as u32);
-            //
-            // let base_color = self.get_config().get_color(CONFIG_COLOR_BASE);
-            // let border_color = self.get_config().get_color(CONFIG_COLOR_BORDER);
-            //
-            // c.with_texture_canvas(self.texture_store.get_mut_ref(), |texture| {
-            //     texture.set_draw_color(base_color);
-            //     texture.clear();
-            //
-            //     texture.set_draw_color(border_color);
-            //     texture
-            //         .draw_rect(Rect::new(0, 0, bounds[0], bounds[1]))
-            //         .unwrap();
-            // })
-            //     .unwrap();
+            let base_color = self.properties.get_color(PROPERTY_MAIN_COLOR, Color::RGB(255, 255, 255));
+            let border_color = self.properties.get_color(PROPERTY_BACKGROUND_COLOR, Color::RGB(0, 0, 0));
+            let bounds = self.properties.get_bounds(PROPERTY_SIZE);
+
+            self.texture_store
+                .create_or_resize_texture(c, bounds.0, bounds.1);
+
+            c.with_texture_canvas(self.texture_store.get_mut_ref(), |texture| {
+                texture.set_draw_color(base_color);
+                texture.clear();
+
+                texture.set_draw_color(border_color);
+                texture
+                    .draw_rect(Rect::new(0, 0, bounds.0, bounds.1))
+                    .unwrap();
+            })
+                .unwrap();
         }
 
         self.texture_store.get_optional_ref()

@@ -49,7 +49,7 @@ pub trait Widget {
 
     /// Sets a property for a `Widget`.
     fn set_property(&mut self, property_key: u32, property_value: String) {
-        self.properties().set(property_key, property_value.clone());
+        self.properties().set(property_key, property_value);
         // Send signal that a property changed to the engine.
     }
 
