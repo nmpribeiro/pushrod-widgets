@@ -78,7 +78,7 @@ impl WidgetProperties {
         if self.properties.contains_key(&property_key) {
             let tokens: Vec<&str> = self.properties.get(&property_key).unwrap().split(' ').collect();
 
-            (tokens[0].parse::<u32>().unwrap(), tokens[1].parse::<u32>().unwrap())
+            (u32::from_str_radix(tokens[0], 10).unwrap(), u32::from_str_radix(tokens[1], 10).unwrap())
         } else {
             (0_u32, 0_u32)
         }
