@@ -76,6 +76,21 @@ impl WidgetCache {
     pub fn get_widget_children(&self, widget_id: u32) -> Vec<u32> {
         self.cache[widget_id as usize].children.clone()
     }
+
+    /// Determines whether any of the `Widget`s in the cache have indicated that they need to be
+    /// redrawn.
+    pub fn invalidated(&self) -> bool {
+        let mut invalidated: bool = false;
+
+        for x in &self.cache {
+            if x.widget.borrow_mut().invalidated() {
+                invalidated = true;
+                break;
+            }
+        }
+
+        invalidated
+    }
 }
 
 /// This is a storage object for the `TextureCache`.
