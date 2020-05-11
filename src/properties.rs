@@ -56,17 +56,35 @@ impl WidgetProperties {
         self.properties.contains_key(&property_key)
     }
 
+    /// Sets the invalidated state for the `Widget`.
+    pub fn invalidate(&mut self) {
+        self.set(PROPERTY_INVALIDATED, String::from("1"));
+    }
+
+    /// Stores the color for the specified key.  Format is "r g b a", as numerical values, base 10.
+    /// Sets the invalidate flag afterward.
+    pub fn set_color(&mut self, property_key: u32, color: Color) {
+        self.set(property_key, format!("{} {} {} {}", color.r, color.g, color.b, color.a));
+        self.invalidate();
+    }
+
+    /// Sets the size of the `Widget`.  Sets the invalidate flag afterward.
+    pub fn set_bounds(&mut self, w: u32, h: u32) {
+        self.set(PROPERTY_SIZE, format!("{} {}", w, h));
+        self.invalidate();
+    }
+
     /// Retrieves a color based on the given property key.  If the color cannot be found, the
     /// `default_color` specified will be returned.
     pub fn get_color(&self, property_key: u32, default_color: Color) -> Color {
         if self.properties.contains_key(&property_key) {
-            let color_spec = self.properties.get(&property_key).unwrap();
-            let color_u32 = u32::from_str_radix(color_spec, 16).unwrap();
-            let color_b = (color_u32 & 0x0000FF) as u8;
-            let color_g = ((color_u32 & 0x00FF00) >> 8) as u8;
-            let color_r = ((color_u32 & 0xFF0000) >> 16) as u8;
+            let tokens: Vec<&str> = self.properties.get(&property_key).unwrap().split(' ').collect();
+            let color_r = ((u32::from_str_radix(tokens[0], 10).unwrap() & 0xFF0000) >> 16) as u8;
+            let color_g = ((u32::from_str_radix(tokens[1], 10).unwrap() & 0x00FF00) >> 8) as u8;
+            let color_b = (u32::from_str_radix(tokens[2], 10).unwrap() & 0x0000FF) as u8;
+            let color_a = (u32::from_str_radix(tokens[3], 10).unwrap() & 0x0000FF) as u8;
 
-            Color::RGB(color_r, color_g, color_b)
+            Color::RGBA(color_r, color_g, color_b, color_a)
         } else {
             default_color
         }
@@ -74,9 +92,9 @@ impl WidgetProperties {
 
     /// Retrieves the stored bounds as a tuple.  If the bounds cannot be found, invisible bounds
     /// are returned (0x0).
-    pub fn get_bounds(&self, property_key: u32) -> (u32, u32) {
-        if self.properties.contains_key(&property_key) {
-            let tokens: Vec<&str> = self.properties.get(&property_key).unwrap().split(' ').collect();
+    pub fn get_bounds(&self) -> (u32, u32) {
+        if self.properties.contains_key(&PROPERTY_SIZE) {
+            let tokens: Vec<&str> = self.properties.get(&PROPERTY_SIZE).unwrap().split(' ').collect();
 
             (u32::from_str_radix(tokens[0], 10).unwrap(), u32::from_str_radix(tokens[1], 10).unwrap())
         } else {

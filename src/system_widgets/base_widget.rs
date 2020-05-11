@@ -38,7 +38,7 @@ impl Widget for BaseWidget {
         if self.invalidated() {
             let base_color = self.properties.get_color(PROPERTY_MAIN_COLOR, Color::RGB(255, 255, 255));
             let border_color = self.properties.get_color(PROPERTY_BACKGROUND_COLOR, Color::RGB(0, 0, 0));
-            let bounds = self.properties.get_bounds(PROPERTY_SIZE);
+            let bounds = self.properties.get_bounds();
 
             self.texture_store
                 .create_or_resize_texture(c, bounds.0, bounds.1);
