@@ -26,10 +26,16 @@ use sdl2::video::Window;
 use std::collections::HashMap;
 use std::path::Path;
 
+struct WidgetCacheContainer {
+    widget: RefCell<Box<dyn Widget>>,
+    parent: u32,
+    children: Vec<u32>,
+}
+
 /// This is the `WidgetCache` store structure.
 #[derive(Default)]
 pub struct WidgetCache {
-    cache: Vec<RefCell<Box<dyn Widget>>>,
+    cache: Vec<WidgetCacheContainer>,
 }
 
 // TODO Add parent
@@ -52,6 +58,27 @@ impl WidgetCache {
         let mut found_id: u32 = 0;
 
         found_id
+    }
+
+    /// Retrieves the `Widget` stored by its `RefCell<Box>` reference.
+    #[inline]
+    pub fn get_widget(&self, widget_id: u32) -> &RefCell<Box<dyn Widget>> {
+        &self.cache[widget_id as usize].widget
+    }
+
+    /// Retrieves the parent ID of the widget ID specified.  If the widget is a top level widget (meaning
+    /// there are no additional parents), a 0 will be returned.
+    #[inline]
+    pub fn get_widget_parent(&self, widget_id: u32) -> u32 {
+        self.cache[widget_id as usize].parent
+    }
+
+    /// Retrieves a list of children for the specified widget ID.  The child listing will always
+    /// return a `Vec` - if any widgets have been added to this `Widget` as a parent, those IDs
+    /// will be returned here.  If this widget has no children, an empty `Vec` will be returned.
+    #[inline]
+    pub fn get_widget_children(&self, widget_id: u32) -> Vec<u32> {
+        self.cache[widget_id as usize].children.clone()
     }
 }
 

@@ -19,7 +19,7 @@ use sdl2::pixels::Color;
 
 pub const PROPERTY_NATIVE_WIDGET_ADDER: u32 = 0;
 pub const PROPERTY_INVALIDATED: u32 = 1;
-pub const PROPERTY_POSITION: u32 = 2;
+pub const PROPERTY_ORIGIN: u32 = 2;
 pub const PROPERTY_SIZE: u32 = 3;
 pub const PROPERTY_TEXT: u32 = 4;
 pub const PROPERTY_MAIN_COLOR: u32 = 5;
@@ -36,6 +36,24 @@ pub struct WidgetProperties {
 /// `Widget`, which stores information about the property.  Once each property is set, the `Widget`
 /// can respond to the set action, and repaint itself, or anything similar.
 impl WidgetProperties {
+    /*
+     * PRIVATE MEMBERS
+     */
+    #[inline]
+    fn get_tuples(&self, property_key: u32, default_tuple: (u32, u32)) -> (u32, u32) {
+        if self.properties.contains_key(&property_key) {
+            let tokens: Vec<&str> = self.properties.get(&property_key).unwrap().split(' ').collect();
+
+            (u32::from_str_radix(tokens[0], 10).unwrap(), u32::from_str_radix(tokens[1], 10).unwrap())
+        } else {
+            default_tuple
+        }
+    }
+
+    /*
+     * PUBLIC MEMBERS
+     */
+
     /// Sets a value for a property based on its numerical key.
     pub fn set(&mut self, property_key: u32, property_value: String) {
         self.properties.insert(property_key, property_value);
@@ -74,6 +92,12 @@ impl WidgetProperties {
         self.invalidate();
     }
 
+    /// Sets the origin for the `Widget`.  Does not set the invalidate flag, as the repositioning of
+    /// the `Widget` does not require a repaint.
+    pub fn set_origin(&mut self, x: u32, y: u32) {
+        self.set(PROPERTY_ORIGIN, format!("{} {}", x, y));
+    }
+
     /// Retrieves a color based on the given property key.  If the color cannot be found, the
     /// `default_color` specified will be returned.
     pub fn get_color(&self, property_key: u32, default_color: Color) -> Color {
@@ -93,13 +117,13 @@ impl WidgetProperties {
     /// Retrieves the stored bounds as a tuple.  If the bounds cannot be found, invisible bounds
     /// are returned (0x0).
     pub fn get_bounds(&self) -> (u32, u32) {
-        if self.properties.contains_key(&PROPERTY_SIZE) {
-            let tokens: Vec<&str> = self.properties.get(&PROPERTY_SIZE).unwrap().split(' ').collect();
+        self.get_tuples(PROPERTY_SIZE, (0_u32, 0_u32))
+    }
 
-            (u32::from_str_radix(tokens[0], 10).unwrap(), u32::from_str_radix(tokens[1], 10).unwrap())
-        } else {
-            (0_u32, 0_u32)
-        }
+    /// Retrieves the origin of the `Widget`.  If the origin cannot be found, an origin of 0x0 is
+    /// returned.
+    pub fn get_origin(&self) -> (u32, u32) {
+        self.get_tuples(PROPERTY_ORIGIN, (0_u32, 0_u32))
     }
 
 }
