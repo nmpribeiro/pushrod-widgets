@@ -38,10 +38,6 @@ pub struct WidgetCache {
     cache: Vec<WidgetCacheContainer>,
 }
 
-// TODO Add parent
-// TODO Add children Vec<u32>
-// TODO Add get_child_ids(widget_id)
-
 /// This is the `WidgetCache` that is used to store `Widget` references in a drawing tree by ID.
 impl WidgetCache {
     /// Retrieves the ID of the widget at the X/Y coordinates given.
