@@ -77,6 +77,7 @@ impl WidgetCache {
 
     /// Retrieves the ID of a `Widget` by its `name`.  If the `name` could not be located, the top
     /// level ID `0` is returned.
+    #[inline]
     pub fn get_by_name(&self, name: String) -> u32 {
         let cache_size = self.size();
 
