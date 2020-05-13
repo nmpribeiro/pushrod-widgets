@@ -19,11 +19,12 @@ use sdl2::pixels::Color;
 
 pub const PROPERTY_NATIVE_WIDGET_ADDER: u32 = 0;
 pub const PROPERTY_INVALIDATED: u32 = 1;
-pub const PROPERTY_ORIGIN: u32 = 2;
-pub const PROPERTY_SIZE: u32 = 3;
-pub const PROPERTY_TEXT: u32 = 4;
-pub const PROPERTY_MAIN_COLOR: u32 = 5;
-pub const PROPERTY_BACKGROUND_COLOR: u32 = 6;
+pub const PROPERTY_HIDDEN: u32 = 2;
+pub const PROPERTY_ORIGIN: u32 = 3;
+pub const PROPERTY_SIZE: u32 = 4;
+pub const PROPERTY_TEXT: u32 = 5;
+pub const PROPERTY_MAIN_COLOR: u32 = 6;
+pub const PROPERTY_BACKGROUND_COLOR: u32 = 7;
 
 /// This is a structure that stores properties for Widgets, which can be used to define the object's
 /// behavior.
@@ -98,6 +99,11 @@ impl WidgetProperties {
         self.set(PROPERTY_ORIGIN, format!("{} {}", x, y));
     }
 
+    /// Sets a boolean for a given property key.
+    pub fn set_bool(&mut self, property_key: u32) {
+        self.set(property_key, String::from("1"));
+    }
+
     /// Retrieves a color based on the given property key.  If the color cannot be found, the
     /// `default_color` specified will be returned.
     pub fn get_color(&self, property_key: u32, default_color: Color) -> Color {
@@ -123,6 +129,19 @@ impl WidgetProperties {
     /// returned.
     pub fn get_origin(&self) -> (u32, u32) {
         self.get_tuples(PROPERTY_ORIGIN, (0_u32, 0_u32))
+    }
+
+    /// Retrieves the boolean value for a specified property.  If the property has not been set
+    /// with `set_bool`, the return will be `false`.  Otherwise, if the specified key exists, and
+    /// the value is set to `1`, the return value will be `true`.
+    pub fn get_bool(&self, property_key: u32) -> bool {
+        if self.properties.contains_key(&property_key) {
+            if self.properties.get(&property_key).unwrap() == "1" {
+                return true
+            }
+        }
+
+        false
     }
 
 }
