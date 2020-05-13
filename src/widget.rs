@@ -62,12 +62,7 @@ pub trait Widget {
     /// Flag indicating whether or not the `draw` method needs to be called for this `Widget` so
     /// that its `TextureCache` is refreshed.
     fn invalidated(&mut self) -> bool {
-        if self.properties().key_set(PROPERTY_INVALIDATED) {
-            self.properties().delete(PROPERTY_INVALIDATED);
-            true
-        } else {
-            false
-        }
+        self.properties().key_set(PROPERTY_INVALIDATED)
     }
 
 }

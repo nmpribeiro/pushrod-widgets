@@ -36,6 +36,7 @@ struct WidgetCacheContainer {
 #[derive(Default)]
 pub struct WidgetCache {
     cache: Vec<WidgetCacheContainer>,
+    texture_cache: TextureCache,
 }
 
 /// This is the `WidgetCache` that is used to store `Widget` references in a drawing tree by ID.
@@ -50,7 +51,7 @@ impl WidgetCache {
     /// The found ID is then returned having met all of those criteria.  If no ID was found, a
     /// 0 value (root level widget) is returned.
     #[inline]
-    pub fn get_widget_at(&self, x: u32, y: u32) -> u32 {
+    pub fn id_at_point(&self, x: u32, y: u32) -> u32 {
         let mut found_id: u32 = 0;
 
         found_id
@@ -58,14 +59,14 @@ impl WidgetCache {
 
     /// Retrieves the `Widget` stored by its `RefCell<Box>` reference.
     #[inline]
-    pub fn get_widget(&self, widget_id: u32) -> &RefCell<Box<dyn Widget>> {
+    pub fn get(&self, widget_id: u32) -> &RefCell<Box<dyn Widget>> {
         &self.cache[widget_id as usize].widget
     }
 
     /// Retrieves the parent ID of the widget ID specified.  If the widget is a top level widget (meaning
     /// there are no additional parents), a 0 will be returned.
     #[inline]
-    pub fn get_widget_parent(&self, widget_id: u32) -> u32 {
+    pub fn get_parent_of(&self, widget_id: u32) -> u32 {
         self.cache[widget_id as usize].parent
     }
 
@@ -73,8 +74,14 @@ impl WidgetCache {
     /// return a `Vec` - if any widgets have been added to this `Widget` as a parent, those IDs
     /// will be returned here.  If this widget has no children, an empty `Vec` will be returned.
     #[inline]
-    pub fn get_widget_children(&self, widget_id: u32) -> Vec<u32> {
+    pub fn get_children_of(&self, widget_id: u32) -> Vec<u32> {
         self.cache[widget_id as usize].children.clone()
+    }
+
+    /// Retrieves the total number of `Widget`s in the cache.
+    #[inline]
+    pub fn size(&self) -> u32 {
+        self.cache.capacity() as u32
     }
 
     /// Determines whether any of the `Widget`s in the cache have indicated that they need to be
@@ -99,19 +106,19 @@ pub struct TextureCache {
     ttf_context: Sdl2TtfContext,
 }
 
-/// The `TextureCache` provides a mechanism for caching images, and returning the current
-/// text rendering context.
-impl TextureCache {
-    /// Creates a new `TextureCache`, generally used by the Pushrod runtime.  While you are
-    /// able to instantiate your own `TextureCache`, it is advised that the main run loop
-    /// handle this for you, as you may experience unexpected results and/or excess memory usage.
-    pub fn new() -> Self {
+/// Default implementation for TextureCache.
+impl Default for TextureCache {
+    fn default() -> Self {
         Self {
             images: HashMap::new(),
             ttf_context: sdl2::ttf::init().map_err(|e| e.to_string()).unwrap(),
         }
     }
+}
 
+/// The `TextureCache` provides a mechanism for caching images, and returning the current
+/// text rendering context.
+impl TextureCache {
     /// Returns the currently available text context as a reference.
     pub fn get_ttf_context(&self) -> &Sdl2TtfContext {
         &self.ttf_context
