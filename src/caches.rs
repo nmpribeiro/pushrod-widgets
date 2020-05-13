@@ -28,8 +28,20 @@ use std::path::Path;
 
 struct WidgetCacheContainer {
     widget: RefCell<Box<dyn Widget>>,
+    name: String,
     parent: u32,
     children: Vec<u32>,
+}
+
+impl WidgetCacheContainer {
+    pub fn new(mut widget: Box<dyn Widget>, name: String, parent: u32) -> Self {
+        Self {
+            widget: RefCell::new(widget),
+            name,
+            parent,
+            children: Vec::new(),
+        }
+    }
 }
 
 /// This is the `WidgetCache` store structure.
@@ -76,6 +88,23 @@ impl WidgetCache {
     #[inline]
     pub fn get_children_of(&self, widget_id: u32) -> Vec<u32> {
         self.cache[widget_id as usize].children.clone()
+    }
+
+    /// Adds a new `Widget` to the cache, with the given mutable `Widget`, a name for the `Widget`,
+    /// and the `Widget`'s parent ID.
+    #[inline]
+    pub fn add_widget(&mut self, mut widget: Box<dyn Widget>, widget_name: String, parent_id: u32) -> u32 {
+        self.cache.push(WidgetCacheContainer::new(
+            widget,
+            widget_name,
+            parent_id,
+        ));
+
+        let widget_id = self.size() - 1;
+
+        self.cache[parent_id as usize].children.push(widget_id);
+
+        widget_id
     }
 
     /// Retrieves the total number of `Widget`s in the cache.
