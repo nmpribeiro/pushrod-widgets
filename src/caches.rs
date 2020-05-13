@@ -75,6 +75,8 @@ impl WidgetCache {
         &self.cache[widget_id as usize].widget
     }
 
+    // get_by_name
+
     /// Retrieves the parent ID of the widget ID specified.  If the widget is a top level widget (meaning
     /// there are no additional parents), a 0 will be returned.
     #[inline]
@@ -94,6 +96,9 @@ impl WidgetCache {
     /// and the `Widget`'s parent ID.
     #[inline]
     pub fn add_widget(&mut self, mut widget: Box<dyn Widget>, widget_name: String, parent_id: u32) -> u32 {
+        // use get_by_name to make sure the widget doesn't already exist by name.  If it does,
+        // throw an error.
+
         self.cache.push(WidgetCacheContainer::new(
             widget,
             widget_name,
