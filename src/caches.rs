@@ -34,7 +34,7 @@ struct WidgetCacheContainer {
 }
 
 impl WidgetCacheContainer {
-    pub fn new(mut widget: Box<dyn Widget>, name: String, parent: u32) -> Self {
+    pub fn new(widget: Box<dyn Widget>, name: String, parent: u32) -> Self {
         Self {
             widget: RefCell::new(widget),
             name,
@@ -75,7 +75,19 @@ impl WidgetCache {
         &self.cache[widget_id as usize].widget
     }
 
-    // get_by_name
+    /// Retrieves the ID of a `Widget` by its `name`.  If the `name` could not be located, the top
+    /// level ID `0` is returned.
+    pub fn get_by_name(&self, name: String) -> u32 {
+        let cache_size = self.size();
+
+        for i in 0..cache_size {
+            if self.cache[i as usize].name == name {
+                return i
+            }
+        }
+
+        0
+    }
 
     /// Retrieves the parent ID of the widget ID specified.  If the widget is a top level widget (meaning
     /// there are no additional parents), a 0 will be returned.
@@ -98,6 +110,9 @@ impl WidgetCache {
     pub fn add_widget(&mut self, mut widget: Box<dyn Widget>, widget_name: String, parent_id: u32) -> u32 {
         // use get_by_name to make sure the widget doesn't already exist by name.  If it does,
         // throw an error.
+
+        // Invalidate the Widget just in case.
+        &widget.invalidate();
 
         self.cache.push(WidgetCacheContainer::new(
             widget,
