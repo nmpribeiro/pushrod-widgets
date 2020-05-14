@@ -13,9 +13,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+use sdl2::pixels::Color;
 use std::collections::HashMap;
 use std::u32;
-use sdl2::pixels::Color;
 
 pub const PROPERTY_NATIVE_WIDGET_ADDER: u32 = 0;
 pub const PROPERTY_INVALIDATED: u32 = 1;
@@ -43,9 +43,17 @@ impl WidgetProperties {
     #[inline]
     fn get_tuples(&self, property_key: u32, default_tuple: (u32, u32)) -> (u32, u32) {
         if self.properties.contains_key(&property_key) {
-            let tokens: Vec<&str> = self.properties.get(&property_key).unwrap().split(' ').collect();
+            let tokens: Vec<&str> = self
+                .properties
+                .get(&property_key)
+                .unwrap()
+                .split(' ')
+                .collect();
 
-            (u32::from_str_radix(tokens[0], 10).unwrap(), u32::from_str_radix(tokens[1], 10).unwrap())
+            (
+                u32::from_str_radix(tokens[0], 10).unwrap(),
+                u32::from_str_radix(tokens[1], 10).unwrap(),
+            )
         } else {
             default_tuple
         }
@@ -67,7 +75,10 @@ impl WidgetProperties {
 
     /// Retrieves the value for a property.
     pub fn get(&mut self, property_key: u32) -> String {
-        self.properties.get(&property_key).unwrap_or(&String::from("")).clone()
+        self.properties
+            .get(&property_key)
+            .unwrap_or(&String::from(""))
+            .clone()
     }
 
     /// Returns a flag indicating whether or not a property for a numerical key has been set.
@@ -83,7 +94,10 @@ impl WidgetProperties {
     /// Stores the color for the specified key.  Format is "r g b a", as numerical values, base 10.
     /// Sets the invalidate flag afterward.
     pub fn set_color(&mut self, property_key: u32, color: Color) {
-        self.set(property_key, format!("{} {} {} {}", color.r, color.g, color.b, color.a));
+        self.set(
+            property_key,
+            format!("{} {} {} {}", color.r, color.g, color.b, color.a),
+        );
         self.invalidate();
     }
 
@@ -108,10 +122,13 @@ impl WidgetProperties {
     /// `default_color` specified will be returned.
     pub fn get_color(&self, property_key: u32, default_color: Color) -> Color {
         if self.properties.contains_key(&property_key) {
-            let tokens: Vec<u8> = dbg!(self.properties.get(&property_key).unwrap()
+            let tokens: Vec<u8> = dbg!(self
+                .properties
+                .get(&property_key)
+                .unwrap()
                 .split(' ')
                 .map(|x| (u32::from_str_radix(x, 10).unwrap()) as u8))
-                .collect();
+            .collect();
 
             Color::RGBA(tokens[0], tokens[1], tokens[2], tokens[3])
         } else {
@@ -137,11 +154,10 @@ impl WidgetProperties {
     pub fn get_bool(&self, property_key: u32) -> bool {
         if self.properties.contains_key(&property_key) {
             if self.properties.get(&property_key).unwrap() == "1" {
-                return true
+                return true;
             }
         }
 
         false
     }
-
 }

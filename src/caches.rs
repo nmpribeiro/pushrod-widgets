@@ -16,17 +16,17 @@
 // TODO: This should probably be a draw tree, but it needs to store the top-down representation
 // TODO: of the structure.  So, a tree is not entirely accurate.
 
+use crate::properties::{PROPERTY_HIDDEN, PROPERTY_INVALIDATED};
 use crate::widget::Widget;
-use std::cell::RefCell;
 use sdl2::image::LoadTexture;
 use sdl2::pixels::Color;
-use sdl2::render::{Texture, TextureQuery, Canvas};
+use sdl2::rect::Rect;
+use sdl2::render::{Canvas, Texture, TextureQuery};
 use sdl2::ttf::{FontStyle, Sdl2TtfContext};
 use sdl2::video::Window;
+use std::cell::RefCell;
 use std::collections::HashMap;
 use std::path::Path;
-use crate::properties::{PROPERTY_HIDDEN, PROPERTY_INVALIDATED};
-use sdl2::rect::Rect;
 
 struct WidgetCacheContainer {
     widget: RefCell<Box<dyn Widget>>,
@@ -85,7 +85,7 @@ impl WidgetCache {
 
         for i in 0..cache_size {
             if self.cache[i as usize].name == name {
-                return i
+                return i;
             }
         }
 
@@ -110,18 +110,20 @@ impl WidgetCache {
     /// Adds a new `Widget` to the cache, with the given mutable `Widget`, a name for the `Widget`,
     /// and the `Widget`'s parent ID.
     #[inline]
-    pub fn add_widget(&mut self, mut widget: Box<dyn Widget>, widget_name: String, parent_id: u32) -> u32 {
+    pub fn add_widget(
+        &mut self,
+        mut widget: Box<dyn Widget>,
+        widget_name: String,
+        parent_id: u32,
+    ) -> u32 {
         // use get_by_name to make sure the widget doesn't already exist by name.  If it does,
         // throw an error.
 
         // Invalidate the Widget just in case.
         &widget.invalidate();
 
-        self.cache.push(WidgetCacheContainer::new(
-            widget,
-            widget_name,
-            parent_id,
-        ));
+        self.cache
+            .push(WidgetCacheContainer::new(widget, widget_name, parent_id));
 
         let widget_id = self.size() - 1;
 
@@ -160,19 +162,41 @@ impl WidgetCache {
 
         for id in &children_of_widget {
             let paint_widget = &mut self.cache[*id as usize];
-            let is_hidden = paint_widget.widget.borrow_mut().properties().get_bool(PROPERTY_HIDDEN);
+            let is_hidden = paint_widget
+                .widget
+                .borrow_mut()
+                .properties()
+                .get_bool(PROPERTY_HIDDEN);
             let widget_xy = paint_widget.widget.borrow_mut().properties().get_origin();
             let widget_wh = paint_widget.widget.borrow_mut().properties().get_bounds();
 
             if !is_hidden {
-                match paint_widget.widget.borrow_mut().draw(c, &mut self.texture_cache) {
+                match paint_widget
+                    .widget
+                    .borrow_mut()
+                    .draw(c, &mut self.texture_cache)
+                {
                     Some(texture) => {
-                        c.copy(texture, None, Rect::new(widget_xy.0 as i32, widget_xy.1 as i32, widget_wh.0, widget_wh.1)).unwrap();
+                        c.copy(
+                            texture,
+                            None,
+                            Rect::new(
+                                widget_xy.0 as i32,
+                                widget_xy.1 as i32,
+                                widget_wh.0,
+                                widget_wh.1,
+                            ),
+                        )
+                        .unwrap();
                     }
                     None => eprintln!("No texture presented: ID={}", id),
                 };
 
-                paint_widget.widget.borrow_mut().properties().delete(PROPERTY_INVALIDATED);
+                paint_widget
+                    .widget
+                    .borrow_mut()
+                    .properties()
+                    .delete(PROPERTY_INVALIDATED);
             }
 
             if *id != widget_id {

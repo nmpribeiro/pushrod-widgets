@@ -13,16 +13,15 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+use crate::caches::TextureCache;
 use crate::properties::{WidgetProperties, PROPERTY_INVALIDATED};
 use sdl2::render::{Canvas, Texture};
 use sdl2::video::Window;
-use crate::caches::TextureCache;
 
 /// This is the `Widget` trait that all implemented `Widget`s need to extend in order to function
 /// with the `Pushrod` library.  All functions in this trait (aside from default implementations)
 /// should be implemented by the `Widget`.
 pub trait Widget {
-
     /// This provides access to the `WidgetProperties` set for a `Widget`.  These must be defined
     /// in the structure of the `Widget`, as they allow for direct manipulation of the properties.
     fn properties(&mut self) -> &mut WidgetProperties;
@@ -56,7 +55,8 @@ pub trait Widget {
     /// Set the invalidation key for this `Widget`, indicating that the `TextureCache` needs to
     /// be redrawn.
     fn invalidate(&mut self) {
-        self.properties().set(PROPERTY_INVALIDATED, String::from("true"));
+        self.properties()
+            .set(PROPERTY_INVALIDATED, String::from("true"));
     }
 
     /// Flag indicating whether or not the `draw` method needs to be called for this `Widget` so
@@ -64,5 +64,4 @@ pub trait Widget {
     fn invalidated(&mut self) -> bool {
         self.properties().key_set(PROPERTY_INVALIDATED)
     }
-
 }
