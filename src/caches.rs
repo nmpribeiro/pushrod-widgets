@@ -20,11 +20,13 @@ use crate::widget::Widget;
 use std::cell::RefCell;
 use sdl2::image::LoadTexture;
 use sdl2::pixels::Color;
-use sdl2::render::{Canvas, Texture, TextureQuery};
+use sdl2::render::{Texture, TextureQuery, Canvas};
 use sdl2::ttf::{FontStyle, Sdl2TtfContext};
 use sdl2::video::Window;
 use std::collections::HashMap;
 use std::path::Path;
+use crate::properties::{PROPERTY_HIDDEN, PROPERTY_INVALIDATED};
+use sdl2::rect::Rect;
 
 struct WidgetCacheContainer {
     widget: RefCell<Box<dyn Widget>>,
@@ -147,6 +149,36 @@ impl WidgetCache {
         }
 
         invalidated
+    }
+
+    pub fn draw(&mut self, widget_id: u32, c: &mut Canvas<Window>) {
+        let children_of_widget = self.get_children_of(widget_id);
+
+        if children_of_widget.is_empty() {
+            return;
+        }
+
+        for id in &children_of_widget {
+            let paint_widget = &mut self.cache[*id as usize];
+            let is_hidden = paint_widget.widget.borrow_mut().properties().get_bool(PROPERTY_HIDDEN);
+            let widget_xy = paint_widget.widget.borrow_mut().properties().get_origin();
+            let widget_wh = paint_widget.widget.borrow_mut().properties().get_bounds();
+
+            if !is_hidden {
+                match paint_widget.widget.borrow_mut().draw(c, &mut self.texture_cache) {
+                    Some(texture) => {
+                        c.copy(texture, None, Rect::new(widget_xy.0 as i32, widget_xy.1 as i32, widget_wh.0, widget_wh.1)).unwrap();
+                    }
+                    None => eprintln!("No texture presented: ID={}", id),
+                };
+
+                paint_widget.widget.borrow_mut().properties().delete(PROPERTY_INVALIDATED);
+            }
+
+            if *id != widget_id {
+                self.draw(*id, c);
+            }
+        }
     }
 }
 
