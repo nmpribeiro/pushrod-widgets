@@ -109,19 +109,21 @@ impl WidgetProperties {
     }
 
     /// Sets the origin for the `Widget`.  Does not set the invalidate flag, as the repositioning of
-    /// the `Widget` does not require a repaint.
+    /// the `Widget` does not require a repaint.  Sets the invalidate flag afterward.
     pub fn set_origin(&mut self, x: u32, y: u32) {
         self.set(PROPERTY_ORIGIN, format!("{} {}", x, y));
     }
 
-    /// Sets a boolean for a given property key.
+    /// Sets a boolean for a given property key.  Sets the invalidate flag afterward.
     pub fn set_bool(&mut self, property_key: u32) {
         self.set(property_key, String::from("1"));
+        self.invalidate();
     }
 
-    /// Sets a numeric value to a given property key.
+    /// Sets a numeric value to a given property key.  Sets the invalidate flag afterward.
     pub fn set_value(&mut self, property_key: u32, value: i32) {
         self.set(property_key, format!("{}", value));
+        self.invalidate();
     }
 
     /// Retrieves a color based on the given property key.  If the color cannot be found, the
