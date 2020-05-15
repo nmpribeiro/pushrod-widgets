@@ -15,10 +15,9 @@
 
 use sdl2::render::{Canvas, Texture};
 use sdl2::video::Window;
-use std::collections::HashMap;
 
 use crate::caches::TextureCache;
-use crate::properties::{WidgetProperties, PROPERTY_MAIN_COLOR, PROPERTY_SIZE, PROPERTY_BORDER_COLOR, PROPERTY_BORDER_WIDTH};
+use crate::properties::{WidgetProperties, PROPERTY_MAIN_COLOR, PROPERTY_BORDER_COLOR, PROPERTY_BORDER_WIDTH};
 use crate::texture_store::TextureStore;
 use crate::widget::Widget;
 use sdl2::pixels::Color;

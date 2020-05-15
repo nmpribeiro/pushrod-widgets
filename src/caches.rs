@@ -19,7 +19,6 @@
 use crate::properties::{PROPERTY_HIDDEN, PROPERTY_INVALIDATED};
 use crate::widget::Widget;
 use sdl2::image::LoadTexture;
-use sdl2::pixels::Color;
 use sdl2::rect::Rect;
 use sdl2::render::{Canvas, Texture, TextureQuery};
 use sdl2::ttf::{FontStyle, Sdl2TtfContext};
@@ -67,6 +66,33 @@ impl WidgetCache {
     #[inline]
     pub fn id_at_point(&self, x: u32, y: u32) -> u32 {
         let mut found_id: u32 = 0;
+        let mut hidden_widgets: Vec<u32> = vec![];
+        let children_of_widget = self.get_children_of(0);
+
+        for id in &children_of_widget {
+            let is_hidden = self.cache[*id as usize]
+                .widget
+                .borrow_mut()
+                .properties()
+                .get_bool(PROPERTY_HIDDEN);
+            let widget_xy = self.cache[*id as usize].widget.borrow_mut().properties().get_origin();
+            let widget_wh = self.cache[*id as usize].widget.borrow_mut().properties().get_bounds();
+
+            if !is_hidden {
+                if x >= widget_xy.0 && x <= widget_xy.0 + widget_wh.0 && y >= widget_xy.1 &&
+                    y <= widget_xy.1 + widget_wh.1 {
+                    if !hidden_widgets.contains(id) {
+                        found_id = *id;
+                    }
+                }
+            } else {
+                hidden_widgets.push(*id);
+
+                for hidden_widget_id in self.get_children_of(*id) {
+                    hidden_widgets.push(hidden_widget_id);
+                }
+            }
+        }
 
         found_id
     }
@@ -120,7 +146,7 @@ impl WidgetCache {
         // throw an error.
 
         // Invalidate the Widget just in case.
-        &widget.invalidate();
+        widget.invalidate();
 
         self.cache
             .push(WidgetCacheContainer::new(widget, widget_name, parent_id));
