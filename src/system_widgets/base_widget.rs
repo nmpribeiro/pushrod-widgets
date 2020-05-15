@@ -18,7 +18,7 @@ use sdl2::video::Window;
 use std::collections::HashMap;
 
 use crate::caches::TextureCache;
-use crate::properties::{WidgetProperties, PROPERTY_MAIN_COLOR, PROPERTY_SIZE, PROPERTY_BORDER_COLOR};
+use crate::properties::{WidgetProperties, PROPERTY_MAIN_COLOR, PROPERTY_SIZE, PROPERTY_BORDER_COLOR, PROPERTY_BORDER_WIDTH};
 use crate::texture_store::TextureStore;
 use crate::widget::Widget;
 use sdl2::pixels::Color;
@@ -47,6 +47,11 @@ impl Widget for BaseWidget {
                 .get_color(PROPERTY_BORDER_COLOR, Color::RGB(0, 0, 0));
             let bounds = self.properties.get_bounds();
 
+            // Border width
+            let border_width = self
+                .properties
+                .get_value(PROPERTY_BORDER_WIDTH);
+
             self.texture_store
                 .create_or_resize_texture(c, bounds.0, bounds.1);
 
@@ -55,13 +60,17 @@ impl Widget for BaseWidget {
                 texture.set_draw_color(base_color);
                 texture.clear();
 
-                // Draw the border with the color of the border
-                texture.set_draw_color(border_color);
+                if border_width > 0 {
+                    // Draw the border with the color of the border
+                    texture.set_draw_color(border_color);
 
-                // TODO Get border width here and draw the border
-                texture
-                    .draw_rect(Rect::new(0, 0, bounds.0, bounds.1))
-                    .unwrap();
+                    for border_width_count in 0..border_width {
+                        texture
+                            .draw_rect(Rect::new(border_width_count, border_width_count,
+                                                 bounds.0 - border_width_count as u32, bounds.1 - border_width_count as u32))
+                            .unwrap();
+                    }
+                }
             })
             .unwrap();
         }
