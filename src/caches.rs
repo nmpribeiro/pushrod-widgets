@@ -153,6 +153,21 @@ impl WidgetCache {
         invalidated
     }
 
+    /// Recursive drawing function that takes a `Widget`'s ID, and gets a list of the children that
+    /// are owned for that `Widget`.  It then walks the tree of all of the children, and draws the
+    /// contents into a `Texture`.  The `TextureCache` is sent such that the `Widget` has the ability
+    /// to load in an image, or render a font.  This cache should be used sparingly.
+    ///
+    /// If a draw method is called on a `Widget` but the `Widget` has not been invalidated (meaning
+    /// it does not to be redrawn), the cached `Texture` for the `Widget`'s draw surface is returned,
+    /// which is a reference to an `SDL2 Texture`.  This way, the image from GPU memory is simply
+    /// copied back to screen in a very quick operation.
+    ///
+    /// Any `Widget`s that have a property of `PROPERTY_HIDDEN` set will short circuit the draw
+    /// for that `Widget` and its children.
+    ///
+    /// Drawing is computed off-screen in GPU memory, so this is also a very fast operation, which
+    /// should theoretically take place in less than a single draw frame.
     pub fn draw(&mut self, widget_id: u32, c: &mut Canvas<Window>) {
         let children_of_widget = self.get_children_of(widget_id);
 
