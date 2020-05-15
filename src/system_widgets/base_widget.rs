@@ -33,6 +33,10 @@ pub struct BaseWidget {
 
 /// Implementation for drawing a `BaseWidget`, with the `Widget` trait objects applied.
 impl Widget for BaseWidget {
+    fn properties(&mut self) -> &mut WidgetProperties {
+        &mut self.properties
+    }
+
     fn draw(&mut self, c: &mut Canvas<Window>, _t: &mut TextureCache) -> Option<&Texture> {
         // ONLY update the texture if the `BaseWidget` shows that it's been invalidated.
         if self.invalidated() {
@@ -78,9 +82,5 @@ impl Widget for BaseWidget {
         }
 
         self.texture_store.get_optional_ref()
-    }
-
-    fn properties(&mut self) -> &mut WidgetProperties {
-        &mut self.properties
     }
 }
