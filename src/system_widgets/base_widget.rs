@@ -18,9 +18,7 @@ use sdl2::video::Window;
 use std::collections::HashMap;
 
 use crate::caches::TextureCache;
-use crate::properties::{
-    WidgetProperties, PROPERTY_BACKGROUND_COLOR, PROPERTY_MAIN_COLOR, PROPERTY_SIZE,
-};
+use crate::properties::{WidgetProperties, PROPERTY_MAIN_COLOR, PROPERTY_SIZE, PROPERTY_BORDER_COLOR};
 use crate::texture_store::TextureStore;
 use crate::widget::Widget;
 use sdl2::pixels::Color;
@@ -38,22 +36,29 @@ impl Widget for BaseWidget {
     fn draw(&mut self, c: &mut Canvas<Window>, _t: &mut TextureCache) -> Option<&Texture> {
         // ONLY update the texture if the `BaseWidget` shows that it's been invalidated.
         if self.invalidated() {
+            // This is the fill color for this Widget.
             let base_color = self
                 .properties
                 .get_color(PROPERTY_MAIN_COLOR, Color::RGB(255, 255, 255));
+
+            // This is the border paint color.
             let border_color = self
                 .properties
-                .get_color(PROPERTY_BACKGROUND_COLOR, Color::RGB(0, 0, 0));
+                .get_color(PROPERTY_BORDER_COLOR, Color::RGB(0, 0, 0));
             let bounds = self.properties.get_bounds();
 
             self.texture_store
                 .create_or_resize_texture(c, bounds.0, bounds.1);
 
             c.with_texture_canvas(self.texture_store.get_mut_ref(), |texture| {
+                // Fill the texture
                 texture.set_draw_color(base_color);
                 texture.clear();
 
+                // Draw the border with the color of the border
                 texture.set_draw_color(border_color);
+
+                // TODO Get border width here and draw the border
                 texture
                     .draw_rect(Rect::new(0, 0, bounds.0, bounds.1))
                     .unwrap();

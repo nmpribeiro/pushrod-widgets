@@ -24,7 +24,8 @@ pub const PROPERTY_ORIGIN: u32 = 3;
 pub const PROPERTY_SIZE: u32 = 4;
 pub const PROPERTY_TEXT: u32 = 5;
 pub const PROPERTY_MAIN_COLOR: u32 = 6;
-pub const PROPERTY_BACKGROUND_COLOR: u32 = 7;
+pub const PROPERTY_BORDER_COLOR: u32 = 7;
+pub const PROPERTY_BORDER_WIDTH: u32 = 8;
 
 /// This is a structure that stores properties for Widgets, which can be used to define the object's
 /// behavior.
@@ -118,6 +119,11 @@ impl WidgetProperties {
         self.set(property_key, String::from("1"));
     }
 
+    /// Sets a numeric value to a given property key.
+    pub fn set_value(&mut self, property_key: u32, value: i32) {
+        self.set(property_key, format!("{}", value));
+    }
+
     /// Retrieves a color based on the given property key.  If the color cannot be found, the
     /// `default_color` specified will be returned.
     pub fn get_color(&self, property_key: u32, default_color: Color) -> Color {
@@ -160,4 +166,13 @@ impl WidgetProperties {
 
         false
     }
+
+    /// Retrieves a numeric value assigned to a property as an `i32` value.
+    pub fn get_value(&self, property_key: u32) -> i32 {
+        i32::from_str_radix(self.properties
+            .get(&property_key)
+            .unwrap_or(&String::from("0")), 10)
+            .unwrap()
+    }
+
 }
