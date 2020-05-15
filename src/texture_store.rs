@@ -62,7 +62,7 @@ impl TextureStore {
             self.height = height;
             self.store = Some(c.create_texture_target(None, width, height).unwrap());
 
-            eprintln!("Created texture: size={}x{}", width, height);
+            eprintln!("Created texture: size={}x{} (memory={})", width, height, (width * height) * 4);
         }
     }
 }

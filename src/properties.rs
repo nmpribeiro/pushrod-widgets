@@ -158,13 +158,7 @@ impl WidgetProperties {
     /// with `set_bool`, the return will be `false`.  Otherwise, if the specified key exists, and
     /// the value is set to `1`, the return value will be `true`.
     pub fn get_bool(&self, property_key: u32) -> bool {
-        if self.properties.contains_key(&property_key) {
-            if self.properties.get(&property_key).unwrap() == "1" {
-                return true;
-            }
-        }
-
-        false
+        self.properties.contains_key(&property_key) && self.properties.get(&property_key).unwrap() == "1"
     }
 
     /// Retrieves a numeric value assigned to a property as an `i32` value.
