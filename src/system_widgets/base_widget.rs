@@ -66,8 +66,10 @@ impl Widget for BaseWidget {
 
                     for border_width_count in 0..border_width {
                         texture
-                            .draw_rect(Rect::new(border_width_count, border_width_count,
-                                                 bounds.0 - border_width_count as u32, bounds.1 - border_width_count as u32))
+                            .draw_rect(Rect::new(border_width_count,
+                                                 border_width_count,
+                                                 bounds.0 - border_width_count as u32,
+                                                 bounds.1 - border_width_count as u32))
                             .unwrap();
                     }
                 }
