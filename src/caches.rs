@@ -54,6 +54,10 @@ pub struct WidgetCache {
 
 /// This is the `WidgetCache` that is used to store `Widget` references in a drawing tree by ID.
 impl WidgetCache {
+    /// Creates a new `WidgetCache`, adding the `BaseWidget` to the top level of the Window, with the name
+    /// `root` as the root `Widget`.  This `Widget` can be modified like any other - its properties
+    /// can be changed, background color, border color, etc. can all be manipulated just like any
+    /// other `Widget`.  Its ID is `0`.
     pub fn new(w: u32, h: u32) -> Self {
         let mut base_widget = BaseWidget::default();
 
@@ -147,7 +151,7 @@ impl WidgetCache {
     /// Adds a new `Widget` to the cache, with the given mutable `Widget`, a name for the `Widget`,
     /// and the `Widget`'s parent ID.
     #[inline]
-    pub fn add_widget(
+    pub fn add(
         &mut self,
         mut widget: Box<dyn Widget>,
         widget_name: String,
