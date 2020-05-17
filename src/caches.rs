@@ -17,6 +17,7 @@
 // TODO: of the structure.  So, a tree is not entirely accurate.
 
 use crate::properties::{PROPERTY_HIDDEN, PROPERTY_INVALIDATED};
+use crate::system_widgets::base_widget::BaseWidget;
 use crate::widget::Widget;
 use sdl2::image::LoadTexture;
 use sdl2::rect::Rect;
@@ -46,7 +47,6 @@ impl WidgetCacheContainer {
 }
 
 /// This is the `WidgetCache` store structure.
-#[derive(Default)]
 pub struct WidgetCache {
     cache: Vec<WidgetCacheContainer>,
     texture_cache: TextureCache,
@@ -54,6 +54,17 @@ pub struct WidgetCache {
 
 /// This is the `WidgetCache` that is used to store `Widget` references in a drawing tree by ID.
 impl WidgetCache {
+    pub fn new(w: u32, h: u32) -> Self {
+        let mut base_widget = BaseWidget::default();
+
+        &base_widget.properties().set_bounds(w, h);
+
+        Self {
+            cache: vec![WidgetCacheContainer::new(Box::new(base_widget), String::from("root"), 0)],
+            texture_cache: TextureCache::default(),
+        }
+    }
+
     /// Retrieves the ID of the widget at the X/Y coordinates given.
     ///
     /// Follows the following rules:
