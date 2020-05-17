@@ -89,7 +89,7 @@ impl WidgetProperties {
 
     /// Sets the invalidated state for the `Widget`.
     pub fn invalidate(&mut self) {
-        self.set(PROPERTY_INVALIDATED, String::from("1"));
+        self.set_bool(PROPERTY_INVALIDATED);
     }
 
     /// Stores the color for the specified key.  Format is "r g b a", as numerical values, base 10.
@@ -99,31 +99,29 @@ impl WidgetProperties {
             property_key,
             format!("{} {} {} {}", color.r, color.g, color.b, color.a),
         );
+
         self.invalidate();
     }
 
-    /// Sets the size of the `Widget`.  Sets the invalidate flag afterward.
+    /// Sets the size of the `Widget`.
     pub fn set_bounds(&mut self, w: u32, h: u32) {
         self.set(PROPERTY_SIZE, format!("{} {}", w, h));
-        self.invalidate();
     }
 
     /// Sets the origin for the `Widget`.  Does not set the invalidate flag, as the repositioning of
-    /// the `Widget` does not require a repaint.  Sets the invalidate flag afterward.
+    /// the `Widget` does not require a repaint.
     pub fn set_origin(&mut self, x: u32, y: u32) {
         self.set(PROPERTY_ORIGIN, format!("{} {}", x, y));
     }
 
-    /// Sets a boolean for a given property key.  Sets the invalidate flag afterward.
+    /// Sets a boolean for a given property key.
     pub fn set_bool(&mut self, property_key: u32) {
         self.set(property_key, String::from("1"));
-        self.invalidate();
     }
 
-    /// Sets a numeric value to a given property key.  Sets the invalidate flag afterward.
+    /// Sets a numeric value to a given property key.
     pub fn set_value(&mut self, property_key: u32, value: i32) {
         self.set(property_key, format!("{}", value));
-        self.invalidate();
     }
 
     /// Retrieves a color based on the given property key.  If the color cannot be found, the

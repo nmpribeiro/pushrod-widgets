@@ -55,8 +55,7 @@ pub trait Widget {
     /// Set the invalidation key for this `Widget`, indicating that the `TextureCache` needs to
     /// be redrawn.
     fn invalidate(&mut self) {
-        self.properties()
-            .set(PROPERTY_INVALIDATED, String::from("true"));
+        self.properties().set_bool(PROPERTY_INVALIDATED);
     }
 
     /// Flag indicating whether or not the `draw` method needs to be called for this `Widget` so
