@@ -130,12 +130,12 @@ impl WidgetProperties {
     /// `default_color` specified will be returned.
     pub fn get_color(&self, property_key: u32, default_color: Color) -> Color {
         if self.properties.contains_key(&property_key) {
-            let tokens: Vec<u8> = dbg!(self
+            let tokens: Vec<u8> = self
                 .properties
                 .get(&property_key)
                 .unwrap()
                 .split(' ')
-                .map(|x| (u32::from_str_radix(x, 10).unwrap()) as u8))
+                .map(|x| (u32::from_str_radix(x, 10).unwrap()) as u8)
             .collect();
 
             Color::RGBA(tokens[0], tokens[1], tokens[2], tokens[3])
