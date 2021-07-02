@@ -20,5 +20,6 @@ name = "pushrod_widgets"
 path = "src/lib.rs"
 
 [dependencies.sdl2]
-version = "^0.33"
+default-features = false
 features = ["ttf", "image", "unsafe_textures"]
+version = "0.34.5"
