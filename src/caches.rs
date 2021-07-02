@@ -59,6 +59,7 @@ impl WidgetCache {
     /// can be changed, background color, border color, etc. can all be manipulated just like any
     /// other `Widget`.  Its ID is `0`.
     pub fn new(w: u32, h: u32) -> Self {
+        eprintln!("WidgetCache::new");
         let mut base_widget = BaseWidget::default();
 
         &base_widget.properties().set_bounds(w, h);
@@ -89,6 +90,11 @@ impl WidgetCache {
         let children_of_widget = self.get_children_of(0);
 
         for id in &children_of_widget {
+            // eprintln!(
+            //     "WidgetCache::id_at_point cache.length: {}, id: {}",
+            //     self.cache.len(),
+            //     id
+            // );
             if self.cache.len() > *id as usize {
                 let is_hidden = self.cache[*id as usize]
                     .widget
@@ -176,6 +182,11 @@ impl WidgetCache {
     pub fn add(&mut self, mut widget: Box<dyn Widget>, widget_name: String, parent_id: u32) -> u32 {
         // use get_by_name to make sure the widget doesn't already exist by name.  If it does,
         // throw an error.
+        let existent_id = WidgetCache::get_by_name(&self, widget_name.to_string());
+        if existent_id != 0 {
+            // should we really throw an error?
+            panic!("Widget {} was already added!", existent_id)
+        }
 
         // Invalidate the Widget just in case.
         widget.invalidate();
@@ -183,8 +194,7 @@ impl WidgetCache {
         self.cache
             .push(WidgetCacheContainer::new(widget, widget_name, parent_id));
 
-        let widget_id = self.size() - 1;
-
+        let widget_id: u32 = self.size() as u32;
         self.cache[parent_id as usize].children.push(widget_id);
 
         widget_id
@@ -193,7 +203,7 @@ impl WidgetCache {
     /// Retrieves the total number of `Widget`s in the cache.
     #[inline]
     pub fn size(&self) -> u32 {
-        self.cache.capacity() as u32
+        self.cache.len() as u32
     }
 
     /// Determines whether any of the `Widget`s in the cache have indicated that they need to be
