@@ -64,7 +64,11 @@ impl WidgetCache {
         &base_widget.properties().set_bounds(w, h);
 
         Self {
-            cache: vec![WidgetCacheContainer::new(Box::new(base_widget), String::from("root"), 0)],
+            cache: vec![WidgetCacheContainer::new(
+                Box::new(base_widget),
+                String::from("root"),
+                0,
+            )],
             texture_cache: TextureCache::default(),
         }
     }
@@ -85,26 +89,39 @@ impl WidgetCache {
         let children_of_widget = self.get_children_of(0);
 
         for id in &children_of_widget {
-            let is_hidden = self.cache[*id as usize]
-                .widget
-                .borrow_mut()
-                .properties()
-                .get_bool(PROPERTY_HIDDEN);
-            let widget_xy = self.cache[*id as usize].widget.borrow_mut().properties().get_origin();
-            let widget_wh = self.cache[*id as usize].widget.borrow_mut().properties().get_bounds();
+            if self.cache.len() > *id as usize {
+                let is_hidden = self.cache[*id as usize]
+                    .widget
+                    .borrow_mut()
+                    .properties()
+                    .get_bool(PROPERTY_HIDDEN);
+                let widget_xy = self.cache[*id as usize]
+                    .widget
+                    .borrow_mut()
+                    .properties()
+                    .get_origin();
+                let widget_wh = self.cache[*id as usize]
+                    .widget
+                    .borrow_mut()
+                    .properties()
+                    .get_bounds();
 
-            if !is_hidden {
-                if x >= widget_xy.0 && x <= widget_xy.0 + widget_wh.0 && y >= widget_xy.1 &&
-                    y <= widget_xy.1 + widget_wh.1 {
-                    if !hidden_widgets.contains(id) {
-                        found_id = *id;
+                if !is_hidden {
+                    if x >= widget_xy.0
+                        && x <= widget_xy.0 + widget_wh.0
+                        && y >= widget_xy.1
+                        && y <= widget_xy.1 + widget_wh.1
+                    {
+                        if !hidden_widgets.contains(id) {
+                            found_id = *id;
+                        }
                     }
-                }
-            } else {
-                hidden_widgets.push(*id);
+                } else {
+                    hidden_widgets.push(*id);
 
-                for hidden_widget_id in self.get_children_of(*id) {
-                    hidden_widgets.push(hidden_widget_id);
+                    for hidden_widget_id in self.get_children_of(*id) {
+                        hidden_widgets.push(hidden_widget_id);
+                    }
                 }
             }
         }
@@ -145,18 +162,18 @@ impl WidgetCache {
     /// will be returned here.  If this widget has no children, an empty `Vec` will be returned.
     #[inline]
     pub fn get_children_of(&self, widget_id: u32) -> Vec<u32> {
-        self.cache[widget_id as usize].children.clone()
+        // TODO: check this
+        if self.cache.len() > widget_id as usize {
+            self.cache[widget_id as usize].children.clone()
+        } else {
+            self.cache[self.cache.len() - 1].children.clone()
+        }
     }
 
     /// Adds a new `Widget` to the cache, with the given mutable `Widget`, a name for the `Widget`,
     /// and the `Widget`'s parent ID.
     #[inline]
-    pub fn add(
-        &mut self,
-        mut widget: Box<dyn Widget>,
-        widget_name: String,
-        parent_id: u32,
-    ) -> u32 {
+    pub fn add(&mut self, mut widget: Box<dyn Widget>, widget_name: String, parent_id: u32) -> u32 {
         // use get_by_name to make sure the widget doesn't already exist by name.  If it does,
         // throw an error.
 
@@ -217,46 +234,50 @@ impl WidgetCache {
         }
 
         for id in &children_of_widget {
-            let paint_widget = &mut self.cache[*id as usize];
-            let is_hidden = paint_widget
-                .widget
-                .borrow_mut()
-                .properties()
-                .get_bool(PROPERTY_HIDDEN);
-            let widget_xy = paint_widget.widget.borrow_mut().properties().get_origin();
-            let widget_wh = paint_widget.widget.borrow_mut().properties().get_bounds();
-
-            if !is_hidden {
-                match paint_widget
-                    .widget
-                    .borrow_mut()
-                    .draw(c, &mut self.texture_cache)
-                {
-                    Some(texture) => {
-                        c.copy(
-                            texture,
-                            None,
-                            Rect::new(
-                                widget_xy.0 as i32,
-                                widget_xy.1 as i32,
-                                widget_wh.0,
-                                widget_wh.1,
-                            ),
-                        )
-                        .unwrap();
-                    }
-                    None => eprintln!("No texture presented: ID={}", id),
-                };
-
-                paint_widget
+            // TODO: check this
+            let new_id: usize = *id as usize - 1;
+            if self.cache.len() > new_id as usize {
+                let paint_widget = &mut self.cache[new_id];
+                let is_hidden = paint_widget
                     .widget
                     .borrow_mut()
                     .properties()
-                    .delete(PROPERTY_INVALIDATED);
+                    .get_bool(PROPERTY_HIDDEN);
+                let widget_xy = paint_widget.widget.borrow_mut().properties().get_origin();
+                let widget_wh = paint_widget.widget.borrow_mut().properties().get_bounds();
+
+                if !is_hidden {
+                    match paint_widget
+                        .widget
+                        .borrow_mut()
+                        .draw(c, &mut self.texture_cache)
+                    {
+                        Some(texture) => {
+                            c.copy(
+                                texture,
+                                None,
+                                Rect::new(
+                                    widget_xy.0 as i32,
+                                    widget_xy.1 as i32,
+                                    widget_wh.0,
+                                    widget_wh.1,
+                                ),
+                            )
+                            .unwrap();
+                        }
+                        None => eprintln!("No texture presented: ID={}", new_id),
+                    };
+
+                    paint_widget
+                        .widget
+                        .borrow_mut()
+                        .properties()
+                        .delete(PROPERTY_INVALIDATED);
+                }
             }
 
-            if *id != widget_id {
-                self.draw(*id, c);
+            if new_id as u32 != widget_id {
+                self.draw(new_id as u32, c);
             }
         }
     }
